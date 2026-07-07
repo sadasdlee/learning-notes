@@ -41,7 +41,7 @@ class LRUCache:
             return None
         else:
             node = self._remove_node(self.tail.prev)
-            # print(f"node of key: {node.key}, value: {node.value} is pop")
+            return node
 
     def get(self, key: int) -> int:
         if key not in self.cache:
@@ -51,15 +51,21 @@ class LRUCache:
         return node.value
     
     def put(self, key: int, value: int) -> None:
-        if len(self.cache) >= self.capacity:
-            self._pop_tail()
-        new_node = Node(key, value)
-        self.cache[key] = new_node
-        self._add_to_head(new_node)
+        if key in self.cache:
+            node = self.cache[key]
+            node.value = value
+            self._move_to_head(node)
+        else:
+            if len(self.cache) >= self.capacity:
+                tail_node = self._pop_tail()
+                del self.cache[tail_node.key]
+            new_node = Node(key, value)
+            self.cache[key] = new_node
+            self._add_to_head(new_node)
 
 lru = LRUCache(2)
 lru.put(1, 1)
 lru.put(2, 2)
 print(lru.get(1))
 lru.put(3, 3)
-print(lru.get(3))
+print(lru.get(2))
