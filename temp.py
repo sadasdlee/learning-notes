@@ -1,48 +1,53 @@
 """
-给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
-
-你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
-
-返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+给定一个字符串 s ，请你找出其中不含有重复字符的 最长 子串 的长度。
 
  
 
-示例 1：
+示例 1:
 
-输入：[7,1,5,3,6,4]
-输出：5
-解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
-     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
-示例 2：
+输入: s = "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。注意 "bca" 和 "cab" 也是正确答案。
+示例 2:
 
-输入：prices = [7,6,4,3,1]
-输出：0
-解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
+输入: s = "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+示例 3:
 
+输入: s = "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
 """
+
+            
 class Solution(object):
-    def maxProfit(self, prices):
+    def isValid(self, s):
         """
-        :type prices: List[int]
-        :rtype: int
+        :type s: str
+        :rtype: bool
         """
-        n = len(prices)
-        stack = []
-        res = [0, 0]
-        stack.append(prices[0])
-        for i in range(1, n):
-            price = prices[i]
-            top = stack[-1]
-            if price < top:
-                while stack and price < top:
-                    stack.pop()
-                    if not stack:
-                        break
-                    top = stack[-1]
-                stack.append(price)
+        stack = [0] * len(s)
+        stack_index = -1
+
+        for i in range(len(s)):
+            ch = s[i]
+            if ch == '(' or ch == '[' or ch == '{':
+                stack[stack_index + 1] = ch
+                stack_index += 1
+                continue
+            if stack_index < 0:
+                return False
             else:
-                num = price - top
-                if res[1] < num:
-                    res = [i, num]
-        
-        return res[0]
+                if ch == ')' and stack[stack_index] == '(':
+                    stack_index -= 1
+                elif ch == ']' and stack[stack_index] == '[':
+                    stack_index -= 1
+                elif ch == '}' and stack[stack_index] == '{':
+                    stack_index -= 1
+                else:
+                    return False
+        if stack_index == -1:
+            return True
+        return False
